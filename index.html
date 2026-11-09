@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A cookie for you</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@400;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23d9a05b' stroke='%23b9783a' stroke-width='4'/%3E%3Ccircle cx='24' cy='22' r='9' fill='%23e8b877' opacity='.7'/%3E%3Cellipse cx='21' cy='20' rx='4.5' ry='3.8' fill='%234a2a1a'/%3E%3Cellipse cx='41' cy='19' rx='4' ry='3.4' fill='%234a2a1a'/%3E%3Cellipse cx='32' cy='33' rx='4.8' ry='4' fill='%234a2a1a'/%3E%3Cellipse cx='17' cy='38' rx='3.8' ry='3.2' fill='%234a2a1a'/%3E%3Cellipse cx='45' cy='40' rx='4.4' ry='3.6' fill='%234a2a1a'/%3E%3Cellipse cx='30' cy='48' rx='3.6' ry='3' fill='%234a2a1a'/%3E%3C/svg%3E">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#efe6fb; --ink:#2e1a4f; --soft:#6a4f94; --card:#fffaf2; --accent:#7b3fe4; --accent-ink:#ffffff;
+  --cookie:#d9a05b; --cookie-edge:#b9783a; --chip:#4a2a1a;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1d1033; --ink:#f3eaff; --soft:#b9a2e0; --card:#2c1a4a; --accent:#a77bff; --accent-ink:#1d1033;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1d1033; --ink:#f3eaff; --soft:#b9a2e0; --card:#2c1a4a; --accent:#a77bff; --accent-ink:#1d1033;
+  color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;min-height:100vh;background:var(--bg);color:var(--ink);
+  font-family:"Nunito",system-ui,sans-serif;font-size:18px;line-height:1.6;
+  text-align:center;overflow-x:hidden;
+}
+main{width:100%;max-width:32rem;margin:0 auto;padding:2.5rem 1.25rem 4rem;box-sizing:border-box}
+h1{font-family:"Fraunces",Georgia,serif;font-weight:800;font-size:clamp(2rem,8vw,3rem);line-height:1.1;margin:0 0 .5rem}
+.hint{color:var(--soft);margin:0 0 1.5rem}
+
+/* cookie */
+.stage{position:relative;width:min(70vw,16rem);aspect-ratio:1;margin:1.5rem auto}
+.cookie-btn{all:unset;display:block;position:absolute;inset:0;cursor:pointer;border-radius:50%}
+.cookie-btn:focus-visible{outline:3px solid var(--accent);outline-offset:6px}
+.half{position:absolute;inset:0;border-radius:50%;transition:transform .9s cubic-bezier(.2,.8,.2,1),opacity .6s .4s;
+  background:
+    radial-gradient(circle at 30% 28%,var(--chip) 0 6%,transparent 6.5%),
+    radial-gradient(circle at 68% 24%,var(--chip) 0 5%,transparent 5.5%),
+    radial-gradient(circle at 52% 52%,var(--chip) 0 6.5%,transparent 7%),
+    radial-gradient(circle at 24% 66%,var(--chip) 0 5%,transparent 5.5%),
+    radial-gradient(circle at 74% 70%,var(--chip) 0 6%,transparent 6.5%),
+    radial-gradient(circle at 46% 82%,var(--chip) 0 4.5%,transparent 5%),
+    radial-gradient(circle at 40% 36%,#e8b877,var(--cookie) 60%,var(--cookie-edge));
+  box-shadow:inset 0 0 0 .35rem var(--cookie-edge);
+}
+.half.l{clip-path:inset(0 50% 0 0)}
+.half.r{clip-path:inset(0 0 0 50%)}
+.cookie-btn{animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-.5rem) rotate(-3deg)}}
+.open .cookie-btn{animation:none;pointer-events:none}
+.open .half.l{transform:translateX(-70%) rotate(-24deg);opacity:0}
+.open .half.r{transform:translateX(70%) rotate(24deg);opacity:0}
+.open .stage{display:none}
+
+/* note */
+#note,#ask,#yes{display:none}
+#note.show,#ask.show,#yes.show{display:block;animation:rise .6s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:none}}
+.note{background:var(--card);border-radius:1.25rem;padding:1.75rem 1.5rem;margin:0 0 2rem;
+  box-shadow:0 .5rem 1.5rem rgba(60,20,120,.18);text-align:left}
+.note h2{font-family:"Fraunces",Georgia,serif;font-weight:800;font-size:1.6rem;line-height:1.2;margin:0 0 1rem;text-align:center;color:var(--accent)}
+.note p{margin:0 0 1rem}
+.note .highlight{font-family:"Fraunces",Georgia,serif;font-weight:800;font-size:1.35rem;line-height:1.3;color:var(--accent);text-align:center;margin:1.5rem 0}
+.note .signature{text-align:center;color:var(--soft)}
+.note #from{margin:0;text-align:right;font-weight:700;color:var(--accent)}
+.q{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.5rem;margin:0 0 1rem}
+.row{display:flex;gap:1rem;justify-content:center;align-items:center;min-height:4rem}
+button.act{font:inherit;font-weight:700;border:0;border-radius:999px;padding:.8rem 1.8rem;cursor:pointer}
+#yesBtn{background:var(--accent);color:var(--accent-ink);font-size:1.15rem}
+#noBtn{background:var(--card);color:var(--soft);border:2px solid var(--soft);z-index:3}
+button.act:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#yes .big{font-size:4rem;margin:0}
+.fall{position:fixed;top:-2rem;font-size:1.6rem;pointer-events:none;animation:drop linear forwards;z-index:5}
+@keyframes drop{to{transform:translateY(110vh) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.cookie-btn{animation:none}#note.show,#ask.show,#yes.show{animation:none}.fall{display:none}}
+</style>
+</head>
+<body>
+<main id="app">
+  <section id="start">
+    <h1 id="title">I baked you something</h1>
+    <p class="hint" id="tapHint">Tap the cookie to open it.</p>
+    <div class="stage">
+      <div class="half l"></div><div class="half r"></div>
+      <button class="cookie-btn" id="cookie" aria-label="Open the cookie"></button>
+    </div>
+  </section>
+
+  <section id="note" class="note" aria-live="polite">
+    <h2>A Little Something for You ♡</h2>
+    <p id="hi"></p>
+
+    <p>Hi, hehehe!</p>
+
+    <p>
+      Sorry for staying away from you these past few days.
+      Wala naman akong galit sa'yo. I just needed some space
+      to breathe lang, mwehehe. Hindi ko rin kasi alam kung
+      paano kikilos kapag nandiyan ka. Baka magalit ka na naman
+      sa mga kalokohan na ginagawa ko. 😥
+    </p>
+
+    <p>
+      I know you only want me to become a better person, kaya
+      lagi mo akong pinagsasabihan whenever you notice
+      something wrong with the things I do. And honestly,
+      I'm really grateful for that. Kasi instead of just letting
+      me be, you still choose to give me your time and effort
+      by correcting me and reminding me whenever I do
+      something wrong.
+    </p>
+
+    <p>
+      Anyways, susulitin ko na 'tong pagkakataon na 'to
+      to finally say all the things I've left unsaid.
+    </p>
+
+    <p><i>Oops, nabitin ka ba? HAHAHA. Charot, ito na talaga.</i></p>
+
+    <p>
+      Ayun, I know you probably already have an idea, but
+      I still want you to hear it directly from me.
+    </p>
+
+    <p>
+      I'm sorry it took me this long to say it. I've been
+      trying to gather enough courage kasi, and apparently,
+      it takes a lot for me to finally put these feelings
+      into words. Hindi naman kasi ako gano'n katapang
+      when it comes to things like this, unlike kapag nasa
+      harap ako ng org. HAHAHA.
+    </p>
+
+    <p class="highlight">But yes, I like you. Matagal na. ♡</p>
+
+    <p>
+      I just chose to admire you from a distance and keep
+      my feelings to myself because I didn't want to disturb
+      the peace you already had. I didn't want to make things
+      complicated or put you in an uncomfortable position.
+    </p>
+
+    <p>But I guess I just wanted to be honest with you this time.</p>
+
+    <p>
+      I don't know what happens after this, and I'm not
+      expecting anything in return. I just thought you
+      deserved to hear it from me.
+    </p>
+
+    <p class="signature">That's all. Hehehe. ♡</p>
+
+    <p id="from"></p>
+  </section>
+
+  <section id="ask">
+    <p class="q">You read it?</p>
+    <div class="row" id="row">
+      <button class="act" id="yesBtn">Yes, I read it</button>
+    </div>
+  </section>
+
+  <section id="yes">
+    <p class="big">💜🍪</p>
+    <h1>Thank you for reading</h1>
+    <p class="hint" id="yesMsg"></p>
+  </section>
+</main>
+
+<script>
+var HER_NAME = "To the girl who loves Purple and Cookies";
+var MY_NAME  = "🐜ony";
+var YES_TEXT = "Thank you for taking the time to read this. It really means a lot to me. Here are some cookies for you.";
+
+var $ = function(id){return document.getElementById(id)};
+$("hi").textContent = HER_NAME + ",";
+$("from").textContent = "From " + MY_NAME;
+$("yesMsg").textContent = YES_TEXT;
+
+function show(id){ $(id).classList.add("show"); }
+
+$("cookie").addEventListener("click", function(){
+  $("app").classList.add("open");
+  $("title").style.display = "none";
+  $("tapHint").style.display = "none";
+  show("note");
+  window.scrollTo(0, 0);
+  setTimeout(function(){ show("ask"); }, 900);
+});
+
+$("yesBtn").addEventListener("click", function(){
+  $("start").style.display = "none";
+  $("note").style.display = "none";
+  $("ask").style.display = "none";
+  show("yes");
+  window.scrollTo(0, 0);
+  var items = ["🍪","💜","🍪","💜","🍪","✨"];
+  for(var i=0;i<40;i++){
+    var s = document.createElement("span");
+    s.className = "fall";
+    s.textContent = items[i % items.length];
+    s.style.left = Math.random()*100 + "vw";
+    s.style.animationDuration = (3 + Math.random()*3) + "s";
+    s.style.animationDelay = (Math.random()*1.5) + "s";
+    document.body.appendChild(s);
+  }
+});
+</script>
+</body>
+</html>
